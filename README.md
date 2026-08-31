@@ -59,9 +59,8 @@ Hard boundaries, not settings. There is no flag that relaxes any of them.
 
 ## How it works
 
-```
 ![AI + Deterministic Tax Filing Pipeline](https://raw.githubusercontent.com/AIAnytime/itr-wala-ai-agent/f8f1be3ea53b432ac99c614b4222e4b35bbe455a/demo/imageitr.png)
-```
+
 
 | Script | Job |
 |---|---|
