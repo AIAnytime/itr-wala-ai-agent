@@ -339,6 +339,16 @@ def cmd_refuse(args) -> int:
     return 1
 
 
+def _track(args, stage: str, status: str, detail: str | None = None) -> None:
+    if not getattr(args, "progress", None):
+        return
+    try:
+        from progress import record
+        record(args.progress, stage, status, detail)
+    except Exception:  # noqa: BLE001 - the dashboard never interferes with the portal
+        pass
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--artifacts", default="artifacts",
@@ -346,6 +356,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--mode", choices=("read", "assist"), default="read",
                     help="'read' never types into the page; 'assist' may fill fields "
                          "but still refuses pay/submit/e-verify")
+    ap.add_argument("--progress", metavar="WORKSPACE",
+                    help="also update the status page in this workspace")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     sub.add_parser("open", help="open the login page and navigate to filing")
@@ -359,14 +371,29 @@ def main(argv: list[str] | None = None) -> int:
                                      "opening a browser")
 
     args = ap.parse_args(argv)
+    stage = {"open": "portal", "prefill": "portal", "compare": "check"}[args.cmd]
+    _track(args, stage, "active")
     try:
-        return {"open": cmd_open, "prefill": cmd_prefill, "compare": cmd_compare}[args.cmd](args)
+        rc = {"open": cmd_open, "prefill": cmd_prefill,
+              "compare": cmd_compare}[args.cmd](args)
     except PortalError as exc:
         print(f"\nportal_agent: {exc}", file=sys.stderr)
+        _track(args, stage, "blocked", str(exc).splitlines()[0])
         return 2
     except KeyboardInterrupt:
         print("\nInterrupted. Nothing was submitted.", file=sys.stderr)
         return 130
+
+    if args.cmd == "compare":
+        if rc == 0:
+            _track(args, "check", "done", "The portal agrees with our figures")
+            _track(args, "handover", "you",
+                   "Pay if anything is due, then Submit, then e-Verify. "
+                   "These three are yours alone.")
+        else:
+            _track(args, "check", "blocked",
+                   "The portal and our calculation disagree - do not submit yet")
+    return rc
 
 
 if __name__ == "__main__":

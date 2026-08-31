@@ -436,7 +436,22 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("return_json")
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--progress", metavar="WORKSPACE",
+                    help="also update the status page in this workspace")
     args = ap.parse_args(argv)
+
+    # Progress reporting is a convenience layered on top; it is imported here so
+    # the validator itself stays importable with nothing else present.
+    def track(stage, status, detail=None):
+        if not args.progress:
+            return
+        try:
+            from progress import record
+            record(args.progress, stage, status, detail)
+        except Exception:  # noqa: BLE001 - never let the dashboard block a check
+            pass
+
+    track("validate", "active")
 
     try:
         with open(args.return_json, encoding="utf-8") as fh:
@@ -446,6 +461,13 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     rep = validate(ret)
+
+    if rep.ok:
+        track("validate", "done",
+              f"{len(rep.warnings)} thing(s) to look at" if rep.warnings
+              else "Everything matches your documents")
+    else:
+        track("validate", "blocked", rep.errors[0])
 
     if args.json:
         print(json.dumps({"ok": rep.ok, "errors": rep.errors,

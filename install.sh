@@ -60,9 +60,10 @@ echo "Installing $NAME from $SRC"
 
 echo
 echo "Verifying the tax engine (do not skip this - it is the whole guarantee):"
-if python3 "$SRC/scripts/test_tax_core.py" >/dev/null 2>&1 \
-&& python3 "$SRC/scripts/test_check_return.py" >/dev/null 2>&1; then
-  echo "  76/76 tests pass."
+if python3 "$SRC/scripts/test_tax_core.py"     >/dev/null 2>&1 \
+&& python3 "$SRC/scripts/test_check_return.py" >/dev/null 2>&1 \
+&& python3 "$SRC/scripts/test_progress.py"     >/dev/null 2>&1; then
+  echo "  102/102 tests pass."
 else
   echo "  TESTS FAILED. Do not file with this install." >&2
   echo "  Run them directly to see why:" >&2
@@ -73,6 +74,9 @@ fi
 cat <<'NEXT'
 
 Done. Open your agent and say "file my ITR".
+
+For a live view of where the filing has got to, in plain English:
+    python3 skills/itr-agent/scripts/status_server.py --workspace itr-workspace
 
 The portal driver additionally needs Playwright:
     pip install playwright && playwright install chromium

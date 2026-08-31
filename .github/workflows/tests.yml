@@ -25,6 +25,9 @@ jobs:
       - name: Validator tests
         run: python3 skills/itr-agent/scripts/test_check_return.py
 
+      - name: Progress and status-page tests
+        run: python3 skills/itr-agent/scripts/test_progress.py
+
       - name: The shipped example must validate and compute
         run: |
           python3 skills/itr-agent/scripts/check_return.py \
@@ -41,7 +44,8 @@ jobs:
           python3 - <<'PY'
           import ast, pathlib, sys
           stdlib = set(sys.stdlib_module_names)
-          local = {"tax_core", "check_return", "filing_pack", "portal_agent"}
+          local = {"tax_core", "check_return", "filing_pack", "portal_agent",
+                   "progress", "status_server"}
           bad = []
           for p in pathlib.Path("skills/itr-agent/scripts").glob("*.py"):
               if p.name == "portal_agent.py":

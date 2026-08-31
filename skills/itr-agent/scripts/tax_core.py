@@ -1125,11 +1125,25 @@ def to_dict(cmp: dict) -> dict:
     }
 
 
+def _track(workspace, stage, status, detail=None, **meta):
+    """Optional status-page update. Imported lazily so the engine stays a
+    self-contained module with no reason to reach for anything else."""
+    if not workspace:
+        return
+    try:
+        from progress import record
+        record(workspace, stage, status, detail, **meta)
+    except Exception:  # noqa: BLE001 - the dashboard never blocks a computation
+        pass
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("return_json", help="path to return.json")
     ap.add_argument("--json", action="store_true", help="emit JSON instead of a table")
     ap.add_argument("--regime", choices=("new", "old"), help="compute one regime only")
+    ap.add_argument("--progress", metavar="WORKSPACE",
+                    help="also update the status page in this workspace")
     args = ap.parse_args(argv)
 
     with open(args.return_json, encoding="utf-8") as fh:
@@ -1151,7 +1165,16 @@ def main(argv: list[str] | None = None) -> int:
         cmp = compare(ret)
     except TaxError as exc:
         print(f"tax_core: {exc}", file=sys.stderr)
+        _track(args.progress, "compute", "blocked", str(exc))
         return 2
+
+    chosen = cmp["results"][cmp["recommended"]]
+    _track(args.progress, "compute", "done",
+           f"{cmp['recommended'].capitalize()} regime is cheaper by "
+           f"{cmp['saving']:,.0f}",
+           regime=cmp["recommended"],
+           refund=float(chosen["refund_due"]) or None,
+           payable=float(chosen["net_payable"]) or None)
 
     print(json.dumps(to_dict(cmp), indent=2) if args.json else render(cmp))
     return 0

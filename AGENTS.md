@@ -22,7 +22,9 @@ skills/itr-agent/
   scripts/check_return.py    input validator, closed whitelist
   scripts/filing_pack.py     portal field map
   scripts/portal_agent.py    supervised Playwright session
-  scripts/test_*.py      76 tests
+  scripts/progress.py        filing state the status page reads
+  scripts/status_server.py   localhost-only status page
+  scripts/test_*.py      102 tests
   assets/example-return.json fictional figures, must always validate
 ```
 
@@ -48,6 +50,13 @@ documented as an extra.
 `SCHEMA` in `check_return.py`. Never loosen it to accept unknown keys: a silently
 ignored typo costs a real person a real deduction.
 
+**The status page stays local and optional.** `status_server.py` binds
+`127.0.0.1` by design — do not add a host flag, a tunnel, or a "share this
+link" feature; the page shows someone's salary and refund. Keep it dependency-
+free and self-contained (a test asserts the HTML contains no outbound URL), and
+keep every progress write best-effort: a failed status update must never be the
+reason a tax computation fails.
+
 **Never widen what the agent may do on the portal.** No credential handling, no
 OTP or CAPTCHA path, no pay, no submit, no e-verify. These are not
 configuration. A PR that adds a flag for any of them will be closed.
@@ -57,11 +66,12 @@ configuration. A PR that adds a flag for any of them will be closed.
 ```bash
 python3 skills/itr-agent/scripts/test_tax_core.py
 python3 skills/itr-agent/scripts/test_check_return.py
+python3 skills/itr-agent/scripts/test_progress.py
 python3 skills/itr-agent/scripts/check_return.py skills/itr-agent/assets/example-return.json
 python3 skills/itr-agent/scripts/tax_core.py    skills/itr-agent/assets/example-return.json
 ```
 
-All four must pass. The example is fictional but it is a real regression test —
+All five must pass. The example is fictional but it is a real regression test —
 it exercises presumptive income, Schedule FA and capital gains together.
 
 ## Never commit

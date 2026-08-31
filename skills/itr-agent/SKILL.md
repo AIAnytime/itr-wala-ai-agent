@@ -29,6 +29,10 @@ Two things make this different from a chatbot that answers tax questions:
 2. **You drive the actual portal.** `scripts/portal_agent.py` opens a real
    browser on eportal.incometax.gov.in — but the user logs in, and the user
    performs the three acts that bind them.
+3. **The user can see where they are.** `scripts/status_server.py` serves a
+   plain-English status page on `127.0.0.1`. Filing takes hours and most of it
+   looks like nothing happening; keep that page current so the person whose
+   return it is never has to read your terminal to find out what is going on.
 
 Resolve the skill directory once at the start (from the path this file loaded
 from) and use absolute paths for every script and reference thereafter.
@@ -156,6 +160,19 @@ artifacts/
 
 Keep `work/progress.md` current as you go. Filing gets interrupted — a session
 that can resume is worth the two lines it costs.
+
+Then **start the status page** and tell the user to leave the tab open:
+
+```bash
+python3 <skill>/scripts/progress.py --workspace itr-workspace reset
+python3 <skill>/scripts/status_server.py --workspace itr-workspace &
+# -> http://127.0.0.1:7391
+```
+
+Say what it is in one line: *"Here's a page showing where we are — it updates on
+its own, and it will tell you when I need something from you."* For a
+non-technical filer this is the difference between being walked through a
+process and watching someone else use a terminal.
 
 ### 2. Gather documents
 
@@ -303,6 +320,46 @@ Then stop. These are theirs. Ask nothing further until they say it is done.
 
 ---
 
+## Keeping the status page current
+
+Pass `--progress itr-workspace` to the four scripts and most stages update
+themselves:
+
+```bash
+python3 <skill>/scripts/check_return.py work/return.json --progress itr-workspace
+python3 <skill>/scripts/tax_core.py    work/return.json --progress itr-workspace
+python3 <skill>/scripts/filing_pack.py work/return.json --progress itr-workspace -o output/filing-pack.md
+python3 <skill>/scripts/portal_agent.py --progress itr-workspace compare --pack output/computation.json
+```
+
+Mark the stages those scripts do not cover yourself:
+
+```bash
+P="python3 <skill>/scripts/progress.py --workspace itr-workspace"
+$P start documents
+$P done  documents --detail "Form 16, AIS and 26AS received"
+$P block extract   --detail "Page 2 of the Form 16 is unreadable"
+$P wait  handover  --title "Pay 12,340 first" --detail "Challan 280, minor head 300"
+$P note  "Fresh AIS downloaded - two new entries"
+```
+
+Three habits that make the page worth having:
+
+- **`wait` whenever you need the user.** It turns the page amber, states what
+  you need, and gives them an "I've done this" button. That acknowledgement
+  lands in `progress.json` — check it before asking again.
+- **`block` rather than going quiet.** A blocker in plain English ("TDS in your
+  Form 16 is 8,000 less than 26AS") is far better than a stalled terminal, and
+  it marks any figure already on screen as not final.
+- **Write `--detail` for a person, not a log.** "New regime is cheaper by
+  1,45,430" beats "compute complete". The detail line is what they actually
+  read.
+
+The page is a convenience and nothing depends on it: if it is not running, or
+the writes fail, every script behaves exactly as before.
+
+---
+
 ## Deterministic vs. judgment
 
 | The scripts decide (tested) | You decide |
@@ -331,6 +388,7 @@ express something, say so out loud rather than approximating (rule 11).
 | `references/schedule-fa.md` | anything held outside India |
 | `references/form-picker.md` | choosing ITR-1/2/3/4 |
 | `references/portal-playbook.md` | steps 10–12 |
+| `references/status-page.md` | setting up or explaining the status page |
 
 ---
 

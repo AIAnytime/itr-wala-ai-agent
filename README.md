@@ -66,7 +66,37 @@ documents ──► extraction ──► check_return.py ──► tax_core.py �
 | `check_return.py` | Closed-whitelist schema + cross-checks against your Form 16 / 26AS / AIS totals |
 | `filing_pack.py` | Schedule-by-schedule portal field map, with no PAN in it |
 | `portal_agent.py` | Supervised Playwright session; read-only by default |
-| `test_tax_core.py` · `test_check_return.py` | 76 tests. Run them before you trust the output. |
+| `progress.py` · `status_server.py` | A plain-English status page on `127.0.0.1`, for whoever the return belongs to |
+| `test_*.py` | 102 tests. Run them before you trust the output. |
+
+## For the person whose return it is
+
+Filing takes hours, and from the outside most of it looks like nothing
+happening. So there is a status page — not a dashboard with charts, just an
+honest answer to three questions: **what stage are we at, is it waiting on me,
+and what is the number.**
+
+```bash
+python3 skills/itr-agent/scripts/status_server.py --workspace itr-workspace
+# -> http://127.0.0.1:7391
+```
+
+Thirteen steps in plain English ("Cross-checking the figures", not
+`validate_income`), a progress bar, and the refund or payable figure as soon as
+it exists. When the agent needs something, the page turns amber, says what it
+needs, and offers an **I've done this** button. When something is wrong it turns
+red, explains it in a sentence, and marks any figure on screen as not final.
+
+It updates on its own — the scripts write to it when passed `--progress`, so
+leaving the tab open is the whole interaction.
+
+**It binds to `127.0.0.1` and nothing else.** The page shows your salary and your
+refund; it is not something to put on a network, and there is no flag to make it
+listen elsewhere. No CDN, no fonts, no analytics — one file with its CSS and JS
+inline, so it works with the machine offline. A test asserts the page contains
+no outbound URL at all.
+
+Nothing depends on it. If it is not running, the filing is identical.
 
 ## The parts other tools decline
 
@@ -93,6 +123,7 @@ The engine is where the money is, so it is the part under test:
 ```bash
 python3 skills/itr-agent/scripts/test_tax_core.py      # 41 tests
 python3 skills/itr-agent/scripts/test_check_return.py  # 35 tests
+python3 skills/itr-agent/scripts/test_progress.py      # 26 tests
 ```
 
 Cases are written from the statute, not from the implementation — each asserts
