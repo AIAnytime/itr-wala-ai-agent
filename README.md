@@ -15,6 +15,13 @@ cd itr-wala-ai-agent && ./install.sh          # also: --codex, --gemini, --all
 
 Then open your agent and say **"file my ITR"**.
 
+![The status page during a filing: a TDS mismatch pauses the run and explains why, the refund appears once both regimes are computed, and an amber card hands the last steps back to you](demo/status-page.gif)
+
+*The status page, so the person whose return it is never has to read a terminal:
+a TDS mismatch stops the run and says why in one sentence, the refund lands once
+both regimes are computed, and the amber card hands the final steps back — the
+three only you can do.*
+
 ---
 
 ## Why this one
@@ -88,7 +95,8 @@ needs, and offers an **I've done this** button. When something is wrong it turns
 red, explains it in a sentence, and marks any figure on screen as not final.
 
 It updates on its own — the scripts write to it when passed `--progress`, so
-leaving the tab open is the whole interaction.
+leaving the tab open is the whole interaction. That is the run in the GIF at the
+top of this page.
 
 **It binds to `127.0.0.1` and nothing else.** The page shows your salary and your
 refund; it is not something to put on a network, and there is no flag to make it

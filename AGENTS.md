@@ -26,7 +26,13 @@ skills/itr-agent/
   scripts/status_server.py   localhost-only status page
   scripts/test_*.py      102 tests
   assets/example-return.json fictional figures, must always validate
+demo/record.sh             regenerates demo/status-page.gif
 ```
+
+If you change the status page's look or its stage list, regenerate the demo with
+`./demo/record.sh` (needs ffmpeg and Chrome) rather than letting the README show
+a page that no longer exists. It drives a scripted filing story through headless
+Chrome, so the GIF is reproducible instead of being a binary nobody can rebuild.
 
 ## Rules for changes
 
