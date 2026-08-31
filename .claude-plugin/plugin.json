@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "itr-wala-ai-agent",
+  "displayName": "ITR Wala AI Agent",
+  "version": "1.0.0",
+  "description": "File your Indian ITR (AY 2026-27) end to end: tested tax engine for both regimes, plus a supervised browser agent that drives the e-filing portal. Covers ITR-3, s.44ADA presumptive income and Schedule FA.",
+  "skills": ["./skills/itr-agent"],
+  "author": { "name": "AI Anytime", "url": "https://github.com/AIAnytime" },
+  "homepage": "https://github.com/AIAnytime/itr-wala-ai-agent",
+  "repository": "https://github.com/AIAnytime/itr-wala-ai-agent",
+  "license": "MIT",
+  "keywords": ["itr", "india", "income-tax", "tax-filing", "form-16", "ais",
+               "schedule-fa", "44ada", "playwright", "browser-agent"]
+}

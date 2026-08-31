@@ -1,0 +1,69 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.10", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Tax engine golden tests
+        run: python3 skills/itr-agent/scripts/test_tax_core.py
+
+      - name: Validator tests
+        run: python3 skills/itr-agent/scripts/test_check_return.py
+
+      - name: The shipped example must validate and compute
+        run: |
+          python3 skills/itr-agent/scripts/check_return.py \
+            skills/itr-agent/assets/example-return.json
+          python3 skills/itr-agent/scripts/tax_core.py \
+            skills/itr-agent/assets/example-return.json
+          python3 skills/itr-agent/scripts/filing_pack.py \
+            skills/itr-agent/assets/example-return.json -o /tmp/pack.md
+
+      - name: The engine must have no third-party imports
+        run: |
+          # The guarantee is that the tax math runs offline with nothing
+          # installed. A stray dependency would silently break that.
+          python3 - <<'PY'
+          import ast, pathlib, sys
+          stdlib = set(sys.stdlib_module_names)
+          local = {"tax_core", "check_return", "filing_pack", "portal_agent"}
+          bad = []
+          for p in pathlib.Path("skills/itr-agent/scripts").glob("*.py"):
+              if p.name == "portal_agent.py":
+                  continue  # Playwright is an explicit, documented extra
+              for node in ast.walk(ast.parse(p.read_text())):
+                  mods = []
+                  if isinstance(node, ast.Import):
+                      mods = [a.name.split(".")[0] for a in node.names]
+                  elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+                      mods = [node.module.split(".")[0]]
+                  for m in mods:
+                      if m not in stdlib and m not in local:
+                          bad.append(f"{p.name}: {m}")
+          if bad:
+              print("third-party imports found:", *bad, sep="\n  ")
+              raise SystemExit(1)
+          print("stdlib only - OK")
+          PY
+
+  shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck install.sh
+        run: shellcheck install.sh

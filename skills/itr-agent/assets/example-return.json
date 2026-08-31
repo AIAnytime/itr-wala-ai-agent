@@ -1,0 +1,68 @@
+{
+  "meta": {
+    "assessment_year": "2026-27",
+    "taxpayer_label": "Filer A",
+    "age_band": "below_60",
+    "residential_status": "resident",
+    "itr_form": "ITR-3",
+    "filing_date": "2026-08-20",
+    "due_date": "2026-08-31"
+  },
+
+  "business": {
+    "nature_of_business_code": "16019",
+    "presumptive_44ada": {
+      "gross_receipts_digital": 3800000,
+      "gross_receipts_cash": 0,
+      "declared_income": 1900000
+    }
+  },
+
+  "capital_gains": {
+    "ltcg_112a": 96000,
+    "stcg_111a": 0
+  },
+
+  "other_sources": {
+    "savings_interest": 14200,
+    "deposit_interest": 61000,
+    "dividends": 8400
+  },
+
+  "deductions": {
+    "s80c": 150000,
+    "s80ccd1b": 50000,
+    "s80d": 28000
+  },
+
+  "foreign_assets": [
+    {
+      "asset_type": "custodial_account",
+      "country": "United States of America",
+      "country_code": "2",
+      "institution": "Example Brokerage Inc, 100 Market St, San Francisco CA",
+      "account_ref": "BROKER-1",
+      "opened_on": "2022-05-11",
+      "peak_value": 742000,
+      "closing_value": 688000,
+      "income_accrued": 5100,
+      "income_offered_in_schedule": "other_sources.dividends"
+    }
+  ],
+
+  "taxes_paid": {
+    "tds": 190000,
+    "advance_tax": [
+      { "date": "2026-03-14", "amount": 120000 }
+    ]
+  },
+
+  "source_totals": {
+    "form26as_tds": 190000,
+    "ais_interest": 75200,
+    "ais_dividends": 8400,
+    "broker_ltcg_112a": 96000
+  },
+
+  "notes": "Example only - fictional figures. A freelance professional under s.44ADA with a US brokerage account, which is what forces ITR-3 + Schedule FA instead of ITR-4."
+}

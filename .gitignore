@@ -1,0 +1,34 @@
+# Tax documents and anything derived from them. Nothing here is ever committed.
+itr-workspace/
+docs/
+work/
+output/
+artifacts/
+*AIS*
+*TIS*
+*26AS*
+*Form16*
+*form16*
+*ITR*.json
+*ACK*
+*Challan*
+*.pdf
+!skills/**/assets/*.json
+
+# Credentials
+.env
+.env.*
+*.pem
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# OS / editors
+.DS_Store
+*.swp
+.idea/
+.vscode/

@@ -1,0 +1,16 @@
+{
+  "name": "itr-wala-ai-agent",
+  "owner": { "name": "AI Anytime", "url": "https://github.com/AIAnytime" },
+  "metadata": {
+    "description": "ITR Wala AI Agent - file Indian income tax returns from your terminal"
+  },
+  "plugins": [
+    {
+      "name": "itr-wala-ai-agent",
+      "description": "File your Indian ITR for AY 2026-27: reads Form 16/AIS/26AS, computes both regimes with a tested Python engine, then drives the e-filing portal in a supervised browser. Handles ITR-3, s.44ADA presumptive income and Schedule FA. You always log in, pay, submit and e-verify yourself.",
+      "source": "./",
+      "category": "productivity",
+      "tags": ["india", "tax", "itr", "finance", "browser-automation"]
+    }
+  ]
+}
