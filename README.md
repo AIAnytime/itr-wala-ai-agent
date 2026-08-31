@@ -60,7 +60,7 @@ Hard boundaries, not settings. There is no flag that relaxes any of them.
 ## How it works
 
 ```
-https://github.com/AIAnytime/itr-wala-ai-agent/blob/f8f1be3ea53b432ac99c614b4222e4b35bbe455a/demo/imageitr.png
+![AI + Deterministic Tax Filing Pipeline](./demo/imageitr.png)
 ```
 
 | Script | Job |
