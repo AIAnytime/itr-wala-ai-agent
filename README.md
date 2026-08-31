@@ -60,11 +60,7 @@ Hard boundaries, not settings. There is no flag that relaxes any of them.
 ## How it works
 
 ```
-documents ──► extraction ──► check_return.py ──► tax_core.py ──► filing_pack.py ──► portal_agent.py
-  (model)      (model)        (deterministic)    (deterministic)   (deterministic)     (supervised)
-                                    │                                                        │
-                              blocks on a                                          compares to the rupee
-                           document mismatch                                         before you submit
+https://github.com/AIAnytime/itr-wala-ai-agent/blob/f8f1be3ea53b432ac99c614b4222e4b35bbe455a/demo/imageitr.png
 ```
 
 | Script | Job |
